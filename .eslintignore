@@ -9,3 +9,5 @@
 **/*.spec.js
 **/*.test.js
 **/*.e2e.js
+
+index.d.ts

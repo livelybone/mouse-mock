@@ -12,11 +12,30 @@
   <script src="../lib/umd/index.js"></script>
 </head>
 <body>
-<div id="module"></div>
+<div id="module" style="height: 200vh">
+  <button id="btn" onclick="console.log(event)">
+    <span class="1" style="pointer-events: none">点击触发真实 click 事件</span>
+    <span class="2">!!!!!</span>
+  </button>
+  <button onclick="mockClick()">点击触发模拟的 click 事件</button>
+</div>
 
 <script>
 var module = document.getElementById('module')
+var btn = document.getElementById('btn')
 // do something ...
+
+function mockClick() {
+  MouseMock.mockClick(btn)
+}
+
+btn.addEventListener('click', ev => console.log('addEventListener click', ev))
+btn.onclick = (ev) => console.log(3, ev, ev.currentTarget.onclick)
+btn.ondblclick = (ev) => console.log(4, ev, ev.currentTarget.onclick)
+
+function logPosEl() {
+  console.log(document.elementsFromPoint(20, 20))
+}
 </script>
 </body>
 </html>
