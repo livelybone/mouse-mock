@@ -1,3 +1,3 @@
-declare function mockClick(el: HTMLElement | DOMRect): void;
+declare function mockClick(el?: HTMLElement | DOMRect | null): void;
 
 export { mockClick };

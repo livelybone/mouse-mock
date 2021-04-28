@@ -11,30 +11,32 @@ function eventTrigger(el: Element, ev: any) {
   }
 }
 
-export function mockClick(el: HTMLElement | DOMRect) {
-  const ev = document.createEvent('MouseEvent')
-  const point = getPoint(el)
-  const $el = document.elementFromPoint(point.clientX, point.clientY)
-  if (!$el) {
-    console.error(`Cannot find element for clicking`)
-  } else {
-    ev.initMouseEvent(
-      'click',
-      true,
-      true,
-      window,
-      0,
-      point.screenX,
-      point.screenY,
-      point.clientX,
-      point.clientY,
-      false,
-      false,
-      false,
-      false,
-      0,
-      $el,
-    )
-    eventTrigger($el, ev)
+export function mockClick(el?: HTMLElement | DOMRect | null) {
+  if (el) {
+    const ev = document.createEvent('MouseEvent')
+    const point = getPoint(el)
+    const $el = document.elementFromPoint(point.clientX, point.clientY)
+    if (!$el) {
+      console.error(`Cannot find element for clicking`)
+    } else {
+      ev.initMouseEvent(
+        'click',
+        true,
+        true,
+        window,
+        0,
+        point.screenX,
+        point.screenY,
+        point.clientX,
+        point.clientY,
+        false,
+        false,
+        false,
+        false,
+        0,
+        $el,
+      )
+      eventTrigger($el, ev)
+    }
   }
 }
