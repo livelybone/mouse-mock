@@ -29,6 +29,7 @@ function eventDeal(ev: any) {
 }
 
 const cache = new Map()
+
 export function rewriteListenerBinder() {
   Element.prototype._addEventListener = Element.prototype.addEventListener
   Element.prototype._removeEventListener = Element.prototype.removeEventListener
@@ -62,7 +63,13 @@ export function rewriteListenerBinder() {
       Object.defineProperty(HTMLElement.prototype, k, {
         ...descriptor,
         set: function set(cb) {
-          this[`_${k}`] = (ev: any) => cb?.(eventDeal(ev))
+          this[`_${k}`] =
+            typeof cb === 'function'
+              ? function _(ev: any) {
+                  // @ts-ignore
+                  return cb.call(this, eventDeal(ev))
+                }
+              : cb
         },
       })
     }
