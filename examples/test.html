@@ -13,11 +13,13 @@
 </head>
 <body>
 <div id="module" style="height: 200vh">
-  <button id="btn" onclick="console.log(event)">
-    <span class="1" style="pointer-events: none">点击触发真实 click 事件</span>
-    <span class="2">!!!!!</span>
-  </button>
-  <button onclick="mockClick()">点击触发模拟的 click 事件</button>
+  <div style="height: 10px">
+    <button id="btn" onclick="console.log(event)">
+      <span class="1" style="pointer-events: none">点击触发真实 click 事件</span>
+      <span class="2">!!!!!</span>
+    </button>
+    <button onclick="mockClick()">点击触发模拟的 click 事件</button>
+  </div>
 </div>
 
 <script>

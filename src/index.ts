@@ -1,5 +1,5 @@
-import { rewriteListenerBinder } from './Event'
-import { getPoint } from './Position'
+import { rewriteListenerBinder } from './utils/Event'
+import { getPoint } from './utils/Position'
 
 rewriteListenerBinder()
 
@@ -17,7 +17,10 @@ export function mockClick(el?: HTMLElement | DOMRect | null) {
     const point = getPoint(el)
     const $el = document.elementFromPoint(point.clientX, point.clientY)
     if (!$el) {
-      console.error(`Cannot find element for clicking`)
+      console.error(
+        'Cannot find element for clicking, it seems that the element or the rect you provide is out of the viewport.\n',
+        el,
+      )
     } else {
       ev.initMouseEvent(
         'click',

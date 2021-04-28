@@ -81,6 +81,10 @@ export function rewriteListenerBinder() {
       }
     })
 
-    window.$$RewriteListenerBinderSuccess$$ = true
+    Object.defineProperty(window, '$$RewriteListenerBinderSuccess$$', {
+      value: true,
+      writable: false,
+      configurable: true,
+    })
   }
 }
