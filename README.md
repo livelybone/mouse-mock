@@ -40,6 +40,13 @@ See what method or params you can use in [index.d.ts](./index.d.ts)
 ## Usage
 ```js
 import * as MouseMock from '@livelybone/mouse-mock'
+
+const el = document.getElementById('id')
+MouseMock.mockClick(el)
+
+// or
+const pos = { x: 100, y: 100 }
+MouseMock.mockClick(pos)
 ```
 
 ## CDN

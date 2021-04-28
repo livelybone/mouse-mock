@@ -3,7 +3,7 @@ import { getPoint } from './Position'
 
 rewriteListenerBinder()
 
-export function eventTrigger(el: Element, ev: any) {
+function eventTrigger(el: Element, ev: any) {
   if (el.dispatchEvent) {
     el.dispatchEvent(ev)
   } else {

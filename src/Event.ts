@@ -13,7 +13,11 @@ function eventDeal(ev: any) {
   while (proto.__proto__) {
     Object.keys(proto.__proto__).forEach(k => {
       Object.defineProperty($ev, k, {
-        get: () => ev[k],
+        get: () => {
+          const val = ev[k]
+          if (typeof val === 'function') return val.bind(ev)
+          return val
+        },
         configurable: true,
       })
     })
