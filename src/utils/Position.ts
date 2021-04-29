@@ -41,8 +41,22 @@ export function getPoint(el: DOMRect | Element) {
   const screenPos = { screenX: 0, screenY: 0 }
   if (rect) {
     const { innerWidth, innerHeight } = window
-    clientPos.clientX = minRect.x + minRect.width * Math.random()
-    clientPos.clientY = minRect.y + minRect.height * Math.random()
+    const minRadius = Math.min(minRect.width / 2, minRect.height / 2)
+    const center = {
+      x: minRect.x + minRect.width / 2,
+      y: minRect.y + minRect.height / 2,
+    }
+    const isInCircle = () => {
+      const a = clientPos.clientX - center.x
+      const b = clientPos.clientY - center.y
+      return a * a + b * b <= minRadius * minRadius
+    }
+    do {
+      clientPos.clientX =
+        center.x + minRadius * Math.random() * (Math.random() > 0.5 ? 1 : -1)
+      clientPos.clientY =
+        center.y + minRadius * Math.random() * (Math.random() > 0.5 ? 1 : -1)
+    } while (!isInCircle())
     screenPos.screenX = clientPos.clientX - innerWidth
     screenPos.screenY = clientPos.clientY - innerHeight
   }
