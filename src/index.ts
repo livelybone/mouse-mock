@@ -13,13 +13,28 @@ function eventTrigger(el: Element, ev: any) {
 
 export function mockClick(el?: HTMLElement | DOMRect | null) {
   if (el) {
-    const ev = document.createEvent('MouseEvent')
-    const point = getPoint(el)
-    const $el = document.elementFromPoint(point.clientX, point.clientY)
+    const originPoint = getPoint(el)
+    const point = { ...originPoint }
+    let $el = document.elementFromPoint(point.clientX, point.clientY)
+    let ev = document.createEvent('MouseEvent')
+    while ($el?.nodeName === 'IFRAME' && $el !== el) {
+      const doc = ($el as HTMLIFrameElement).contentWindow?.document
+      if (doc) {
+        const rect = $el.getBoundingClientRect()
+        $el = doc.elementFromPoint(
+          (point.clientX -= rect.x),
+          (point.clientY -= rect.y),
+        )
+        ev = doc.createEvent('MouseEvent')
+      } else {
+        break
+      }
+    }
     if (!$el) {
       console.error(
         'Cannot find element for clicking, it seems that the element or the rect you provide is out of the viewport.\n',
         el,
+        point,
       )
     } else {
       ev.initMouseEvent(
@@ -41,5 +56,6 @@ export function mockClick(el?: HTMLElement | DOMRect | null) {
       )
       eventTrigger($el, ev)
     }
+    return { originPoint, point }
   }
 }

@@ -10,26 +10,16 @@
   <script src="https://cdn.jsdelivr.net/npm/@babel/polyfill/dist/polyfill.min.js"></script>
 
   <script src="../lib/umd/index.js"></script>
-  <style>
-    iframe {
-      width: 100%;
-      height: 300px;
-    }
-  </style>
 </head>
 <body>
 <div id="module" style="height: 200vh">
-  <iframe src="https://baidu.com"></iframe>
-  <iframe src="./test1.html"></iframe>
   <div style="height: 10px">
     <button id="btn" onclick="console.log(event)" style="width: 200px; height: 200px; border-radius: 50%">
       <span class="1" style="pointer-events: none">点击触发真实 click 事件</span>
       <span class="2">!!!!!</span>
     </button>
     <button onclick="mockClick()">点击触发模拟的 click 事件</button>
-    <button onclick="clickElInnerIframe()">点击触发 iframe 内部元素模拟的 click 事件</button>
   </div>
-  <div id="dot" style="position: fixed;width: 3px;height: 3px;background: red"></div>
 </div>
 
 <script>
@@ -47,16 +37,6 @@ btn.ondblclick = (ev) => console.log(4, ev, ev.currentTarget.onclick)
 
 function logPosEl() {
   console.log(document.elementsFromPoint(20, 20))
-}
-
-function clickElInnerIframe() {
-  const rect = Math.random() > 0.5 ? { x: 50, y: 50, width: 50, height: 50 } : { x: 50, y: 450, width: 50, height: 50 }
-  const point = MouseMock.mockClick(rect)
-  if (point) {
-    const dot = document.querySelector('#dot')
-    dot.style.top = (point && point.originPoint.clientY) + 'px'
-    dot.style.left = (point && point.originPoint.clientX) + 'px'
-  }
 }
 </script>
 </body>
