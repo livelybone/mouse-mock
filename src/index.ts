@@ -1,6 +1,8 @@
 import { rewriteListenerBinder } from './utils/Event'
 import { getPoint } from './utils/Position'
 
+export { getWindow } from './utils/Window'
+
 rewriteListenerBinder()
 
 function eventTrigger(el: Element, ev: any) {

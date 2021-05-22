@@ -1,6 +1,6 @@
 {
   "name": "@livelybone/mouse-mock",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A lib for mock mouse events like click, move",
   "main": "./lib/umd/index.js",
   "module": "./lib/es/index.js",

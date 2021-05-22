@@ -19,8 +19,9 @@
 </head>
 <body>
 <div id="module" style="height: 200vh">
-  <iframe src="https://baidu.com"></iframe>
-  <iframe src="./test1.html"></iframe>
+  <div style="height: 200px"></div>
+  <iframe id="iframe1" src="https://baidu.com"></iframe>
+  <iframe id="iframe" src="./test1.html"></iframe>
   <div style="height: 10px">
     <button id="btn" onclick="console.log(event)" style="width: 200px; height: 200px; border-radius: 50%">
       <span class="1" style="pointer-events: none">点击触发真实 click 事件</span>
@@ -30,6 +31,7 @@
     <button onclick="clickElInnerIframe()">点击触发 iframe 内部元素模拟的 click 事件</button>
   </div>
   <div id="dot" style="position: fixed;width: 3px;height: 3px;background: red"></div>
+  <div id="dot1" style="position: fixed;width: 3px;height: 3px;background: red"></div>
 </div>
 
 <script>
@@ -50,12 +52,16 @@ function logPosEl() {
 }
 
 function clickElInnerIframe() {
-  const rect = Math.random() > 0.5 ? { x: 50, y: 50, width: 50, height: 50 } : { x: 50, y: 450, width: 50, height: 50 }
+  const rect = Math.random() > 0.5 ? document.querySelector('#iframe1').getBoundingClientRect() : document.querySelector('#iframe').contentWindow.document.querySelector('#btn')
+  console.log(1111, rect)
   const point = MouseMock.mockClick(rect)
   if (point) {
     const dot = document.querySelector('#dot')
+    const dot1 = document.querySelector('#dot1')
     dot.style.top = (point && point.originPoint.clientY) + 'px'
     dot.style.left = (point && point.originPoint.clientX) + 'px'
+    dot1.style.top = (point && point.point.clientY) + 'px'
+    dot1.style.left = (point && point.point.clientX) + 'px'
   }
 }
 </script>

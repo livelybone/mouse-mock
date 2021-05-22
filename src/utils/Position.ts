@@ -1,6 +1,19 @@
 import { getScrollParent } from '@livelybone/scroll-get'
+import { getWindow } from './Window'
 
-export function getPoint(el: DOMRect | Element) {
+export function getPoint(el: DOMRect | HTMLElement) {
+  const win = 'nodeType' in el ? getWindow(el) : window
+  const iframePosition = (() => {
+    const pos = { x: 0, y: 0, topWindow: win }
+    while (pos.topWindow.frameElement) {
+      const rect = pos.topWindow.frameElement.getBoundingClientRect()
+      pos.x += rect.x
+      pos.y += rect.y
+      pos.topWindow = getWindow(pos.topWindow.frameElement as HTMLElement)
+    }
+    return pos
+  })()
+
   const rect =
     'style' in el ? (el as Element).getBoundingClientRect() : (el as DOMRect)
   const scrollParentsRect = (() => {
@@ -18,8 +31,8 @@ export function getPoint(el: DOMRect | Element) {
   const windowRect = {
     x: 0,
     y: 0,
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: win.innerWidth,
+    height: win.innerHeight,
   }
 
   const minRect = (() => {
@@ -40,7 +53,6 @@ export function getPoint(el: DOMRect | Element) {
   const clientPos = { clientX: 0, clientY: 0 }
   const screenPos = { screenX: 0, screenY: 0 }
   if (rect) {
-    const { innerWidth, innerHeight } = window
     const minRadius = Math.min(minRect.width / 2, minRect.height / 2)
     const center = {
       x: minRect.x + minRect.width / 2,
@@ -57,11 +69,15 @@ export function getPoint(el: DOMRect | Element) {
       clientPos.clientY =
         center.y + minRadius * Math.random() * (Math.random() > 0.5 ? 1 : -1)
     } while (!isInCircle())
-    screenPos.screenX = clientPos.clientX - innerWidth
-    screenPos.screenY = clientPos.clientY - innerHeight
   }
+  const { innerWidth, innerHeight } = iframePosition.topWindow
+  clientPos.clientX += iframePosition.x
+  clientPos.clientY += iframePosition.y
+  screenPos.screenX = clientPos.clientX - innerWidth
+  screenPos.screenY = clientPos.clientY - innerHeight
   return {
     ...clientPos,
     ...screenPos,
+    window: win,
   }
 }
