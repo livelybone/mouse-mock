@@ -3,44 +3,64 @@ import { getWindow } from './Window'
 
 export function getPoint(el: DOMRect | HTMLElement) {
   const win = 'nodeType' in el ? getWindow(el) : window
+  const pagesRect: DOMRect[] = [
+    {
+      x: 0,
+      y: 0,
+      width: window.innerWidth,
+      height: window.innerHeight,
+    } as any,
+  ]
   const iframePosition = (() => {
     const pos = { x: 0, y: 0, topWindow: win }
     while (pos.topWindow.frameElement) {
-      const rect = pos.topWindow.frameElement.getBoundingClientRect()
+      const currWin = pos.topWindow
+      const iframe = currWin.frameElement
+      const rect = iframe.getBoundingClientRect()
+      pos.topWindow = getWindow(iframe as HTMLElement)
+
+      const style = pos.topWindow.getComputedStyle(iframe)
+      rect.x += parseInt(style.borderLeft, 10)
+      rect.y += parseInt(style.borderTop, 10)
+      rect.width = currWin.innerWidth
+      rect.height = currWin.innerHeight
+      pagesRect.push(rect)
+
       pos.x += rect.x
       pos.y += rect.y
-      pos.topWindow = getWindow(pos.topWindow.frameElement as HTMLElement)
     }
     return pos
   })()
+  const iframeElRectCorrect = (rect: DOMRect) => {
+    // eslint-disable-next-line no-param-reassign
+    rect.x += iframePosition.x
+    // eslint-disable-next-line no-param-reassign
+    rect.y += iframePosition.y
+    return rect
+  }
 
-  const rect =
-    'style' in el ? (el as Element).getBoundingClientRect() : (el as DOMRect)
+  const rect = iframeElRectCorrect(
+    'style' in el ? (el as Element).getBoundingClientRect() : (el as DOMRect),
+  )
   const scrollParentsRect = (() => {
     if ('style' in el) {
       const arr: DOMRect[] = []
       let $el = getScrollParent(el as HTMLElement)
       while ($el) {
-        arr.push($el.getBoundingClientRect())
+        arr.push(iframeElRectCorrect($el.getBoundingClientRect()))
         $el = getScrollParent($el)
       }
       return arr.filter(it => it.width && it.height)
     }
     return []
   })()
-  const windowRect = {
-    x: 0,
-    y: 0,
-    width: win.innerWidth,
-    height: win.innerHeight,
-  }
 
   const minRect = (() => {
     let left = -Infinity
     let top = -Infinity
     let right = Infinity
     let bottom = Infinity
-    ;[rect, ...scrollParentsRect, windowRect].forEach(it => {
+    ;[rect, ...scrollParentsRect, ...pagesRect].forEach(it => {
       left = Math.max(left, it.x)
       top = Math.max(top, it.y)
       right = Math.min(right, it.x + it.width)
@@ -50,6 +70,10 @@ export function getPoint(el: DOMRect | HTMLElement) {
     return { x: left, y: top, width: right - left, height: bottom - top }
   })()
 
+  if (minRect.width <= 0 || minRect.height <= 0) {
+    return { clientX: -1, clientY: -1, screenY: -1, screenX: -1 }
+  }
+
   const clientPos = { clientX: 0, clientY: 0 }
   const screenPos = { screenX: 0, screenY: 0 }
   if (rect) {
@@ -58,26 +82,30 @@ export function getPoint(el: DOMRect | HTMLElement) {
       x: minRect.x + minRect.width / 2,
       y: minRect.y + minRect.height / 2,
     }
-    const isInCircle = () => {
-      const a = clientPos.clientX - center.x
-      const b = clientPos.clientY - center.y
-      return a * a + b * b <= minRadius * minRadius
+    if (minRadius >= 1) {
+      const isInCircle = () => {
+        const a = clientPos.clientX - center.x
+        const b = clientPos.clientY - center.y
+        return a * a + b * b <= minRadius * minRadius
+      }
+      do {
+        clientPos.clientX = Math.floor(
+          center.x + minRadius * Math.random() * (Math.random() > 0.5 ? 1 : -1),
+        )
+        clientPos.clientY = Math.floor(
+          center.y + minRadius * Math.random() * (Math.random() > 0.5 ? 1 : -1),
+        )
+      } while (!isInCircle())
+    } else {
+      clientPos.clientX = Math.floor(center.x)
+      clientPos.clientY = Math.floor(center.y)
     }
-    do {
-      clientPos.clientX =
-        center.x + minRadius * Math.random() * (Math.random() > 0.5 ? 1 : -1)
-      clientPos.clientY =
-        center.y + minRadius * Math.random() * (Math.random() > 0.5 ? 1 : -1)
-    } while (!isInCircle())
   }
   const { innerWidth, innerHeight } = iframePosition.topWindow
-  clientPos.clientX += iframePosition.x
-  clientPos.clientY += iframePosition.y
   screenPos.screenX = clientPos.clientX - innerWidth
   screenPos.screenY = clientPos.clientY - innerHeight
   return {
     ...clientPos,
     ...screenPos,
-    window: win,
   }
 }

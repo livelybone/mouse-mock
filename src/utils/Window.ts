@@ -1,16 +1,16 @@
-import { injectScript } from './Common'
+import { inject } from '@livelybone/script-injector'
 
 declare global {
   interface HTMLElement {
-    getWindow(): Window
+    ownerWindow: Window
   }
 }
 
 export function getWindow(el: HTMLElement) {
-  injectScript(
-    el.ownerDocument,
-    'get-window',
-    'HTMLElement.prototype.getWindow = () => { return window }',
-  )
-  return el.getWindow()
+  if (!el.ownerWindow) {
+    inject('HTMLElement.prototype.ownerWindow = window', {
+      document: el.ownerDocument,
+    })
+  }
+  return el.ownerWindow
 }

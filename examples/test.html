@@ -11,6 +11,10 @@
 
   <script src="../lib/umd/index.js"></script>
   <style>
+    body {
+      font-size: 14px;
+    }
+
     iframe {
       width: 100%;
       height: 300px;
@@ -19,42 +23,55 @@
 </head>
 <body>
 <div id="module" style="height: 200vh">
-  <div style="height: 200px"></div>
-  <iframe id="iframe1" src="https://baidu.com"></iframe>
-  <iframe id="iframe" src="./test1.html"></iframe>
+  <div style="height: 200px">
+    <label for="input" style="position: fixed; top: 0; left: 0; right: 0; padding: 8px; background: #fff; box-shadow: 0 0 1px rgba(0,0,0,0.5)">
+      输入您要模拟的鼠标事件：
+      <input id="input" type="text" value="click" placeholder="例如：click">
+    </label>
+  </div>
+<!--  <iframe id="iframe1" src="https://baidu.com" style="border: 1px solid rgba(0,0,0,0.1)"></iframe>-->
+  <iframe id="iframe" src="./test1.html" style="border: 1px solid rgba(0,0,0,0.1)"></iframe>
   <div style="height: 10px">
     <button id="btn" onclick="console.log(event)" style="width: 200px; height: 200px; border-radius: 50%">
-      <span class="1" style="pointer-events: none">点击触发真实 click 事件</span>
+      <span class="1" style="pointer-events: none">触发真实事件</span>
       <span class="2">!!!!!</span>
     </button>
-    <button onclick="mockClick()">点击触发模拟的 click 事件</button>
-    <button onclick="clickElInnerIframe()">点击触发 iframe 内部元素模拟的 click 事件</button>
+    <button onclick="mockMouseEvent()">点击触发模拟事件</button>
+    <button onclick="clickElInnerIframe()">点击触发 iframe 内部元素模拟事件</button>
   </div>
-  <div id="dot" style="position: fixed;width: 3px;height: 3px;background: red"></div>
-  <div id="dot1" style="position: fixed;width: 3px;height: 3px;background: red"></div>
+  <div id="dot" style="position: fixed;width: 3px;height: 3px;background: red; pointer-events: none"></div>
+  <div id="dot1" style="position: fixed;width: 3px;height: 3px;background: red; pointer-events: none"></div>
 </div>
 
 <script>
 var module = document.getElementById('module')
 var btn = document.getElementById('btn')
 // do something ...
+var input = document.getElementById('input')
+var eventType = input.value
 
-function mockClick() {
-  MouseMock.mockClick(btn)
+function listenMouse(ev) {
+  console.log(`addEventListener ${eventType}`, ev)
 }
 
-btn.addEventListener('click', ev => console.log('addEventListener click', ev))
-btn.onclick = (ev) => console.log(3, ev, ev.currentTarget.onclick)
-btn.ondblclick = (ev) => console.log(4, ev, ev.currentTarget.onclick)
+btn.addEventListener(eventType, listenMouse)
+input.addEventListener('change', () => {
+  btn.removeEventListener(eventType, listenMouse)
+  eventType = input.value
+  console.log('eventType', eventType)
+  btn.addEventListener(eventType, listenMouse)
+})
 
-function logPosEl() {
-  console.log(document.elementsFromPoint(20, 20))
+function mockMouseEvent() {
+  MouseMock.mockMouseEvent(eventType, btn)
 }
 
 function clickElInnerIframe() {
-  const rect = Math.random() > 0.5 ? document.querySelector('#iframe1').getBoundingClientRect() : document.querySelector('#iframe').contentWindow.document.querySelector('#btn')
-  console.log(1111, rect)
-  const point = MouseMock.mockClick(rect)
+  // const el = Math.random() > 0.5 ? document.querySelector('#iframe1').getBoundingClientRect() : document.querySelector('#iframe').contentWindow.document.querySelector('#btn')
+  const el = document.querySelector('#iframe').contentWindow.document.querySelector('#btn')
+  console.log(1111, el)
+  const point = MouseMock.mockMouseEvent(eventType, el)
+  console.log(11112222, point, el)
   if (point) {
     const dot = document.querySelector('#dot')
     const dot1 = document.querySelector('#dot1')
@@ -64,6 +81,7 @@ function clickElInnerIframe() {
     dot1.style.left = (point && point.point.clientX) + 'px'
   }
 }
+
 </script>
 </body>
 </html>

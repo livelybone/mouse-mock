@@ -1,6 +1,6 @@
 {
   "name": "@livelybone/mouse-mock",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "A lib for mock mouse events like click, move",
   "main": "./lib/umd/index.js",
   "module": "./lib/es/index.js",
@@ -93,6 +93,7 @@
     ]
   },
   "dependencies": {
-    "@livelybone/scroll-get": "^6.0.1"
+    "@livelybone/script-injector": "^1.0.0",
+    "@livelybone/scroll-get": "^6.0.2"
   }
 }
