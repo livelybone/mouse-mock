@@ -3,8 +3,6 @@ import { getPoint } from './utils/Position'
 
 export { getWindow } from './utils/Window'
 
-export * from '@livelybone/scroll-get'
-
 rewriteListenerBinder()
 
 function eventTrigger(el: Element, ev: any) {

@@ -1,5 +1,3 @@
-export * from '@livelybone/scroll-get';
-
 declare global {
     interface HTMLElement {
         ownerWindow: Window;
