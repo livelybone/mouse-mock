@@ -1,8 +1,8 @@
 import { getScrollParent } from '@livelybone/scroll-get'
-import { getWindow } from './Window'
+import { getOwnerWindow } from '@livelybone/owner-window'
 
 export function getPoint(el: DOMRect | HTMLElement) {
-  const win = 'nodeType' in el ? getWindow(el) : window
+  const win = 'nodeType' in el ? getOwnerWindow(el) : window
   const pagesRect: DOMRect[] = [
     {
       x: 0,
@@ -17,7 +17,7 @@ export function getPoint(el: DOMRect | HTMLElement) {
       const currWin = pos.topWindow
       const iframe = currWin.frameElement
       const rect = iframe.getBoundingClientRect()
-      pos.topWindow = getWindow(iframe as HTMLElement)
+      pos.topWindow = getOwnerWindow(iframe as HTMLElement)
 
       const style = pos.topWindow.getComputedStyle(iframe)
       rect.x += parseInt(style.borderLeft, 10)

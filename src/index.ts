@@ -1,9 +1,6 @@
-import { rewriteListenerBinder } from './utils/Event'
 import { getPoint } from './utils/Position'
 
-export { getWindow } from './utils/Window'
-
-rewriteListenerBinder()
+export { rewriteListenerBinder } from './RewriteListenerBinder'
 
 function eventTrigger(el: Element, ev: any) {
   if (el.dispatchEvent) {

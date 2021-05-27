@@ -1,9 +1,13 @@
 declare global {
-    interface HTMLElement {
-        ownerWindow: Window;
+    interface Element {
+        _addEventListener: Element['addEventListener'];
+        _removeEventListener: Element['removeEventListener'];
+    }
+    interface Window {
+        $$RewriteListenerBinderSuccess$$?: boolean;
     }
 };
-declare function getWindow(el: HTMLElement): Window;
+declare function rewriteListenerBinder(): void;
 
 declare function mockMouseEvent(eventType: string, el?: HTMLElement | DOMRect | null): {
     originPoint: {
@@ -34,4 +38,4 @@ declare function mockClick(el?: HTMLElement | DOMRect | null): {
     };
 } | undefined;
 
-export { getWindow, mockClick, mockMouseEvent };
+export { mockClick, mockMouseEvent, rewriteListenerBinder };
