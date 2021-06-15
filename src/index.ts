@@ -1,6 +1,6 @@
 import { getPoint } from './utils/Position'
 
-export { rewriteListenerBinder } from './RewriteListenerBinder'
+export { rewriteListenerBinder } from './utils/EventBinderRewriter'
 
 function eventTrigger(el: Element, ev: any) {
   if (el.dispatchEvent) {
