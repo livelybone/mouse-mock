@@ -1,3 +1,4 @@
+import { getOwnerWindow } from '@livelybone/owner-window'
 import { getPoint } from './utils/Position'
 
 export { rewriteListenerBinder } from './utils/EventBinderRewriter'
@@ -15,40 +16,26 @@ export function mockMouseEvent(
   el?: HTMLElement | DOMRect | null,
 ) {
   if (el) {
-    const originPoint = getPoint(el)
-    const point = { ...originPoint }
-    let $el = document.elementFromPoint(point.clientX, point.clientY)
-    let ev = document.createEvent('MouseEvent')
-    while ($el?.nodeName === 'IFRAME' && $el !== el) {
-      const win = ($el as HTMLIFrameElement).contentWindow
-      const doc = win?.document
-      if (doc) {
-        const rect = $el.getBoundingClientRect()
-        const style = window.getComputedStyle($el)
-        $el = doc.elementFromPoint(
-          (point.clientX -= rect.x + parseInt(style.borderLeft, 10)),
-          (point.clientY -= rect.y + parseInt(style.borderTop, 10)),
-        )
-        ev = doc.createEvent('MouseEvent')
-      } else {
-        break
-      }
-    }
+    const point = getPoint(el)
+    const $el =
+      el && 'nodeName' in el
+        ? el
+        : document.elementFromPoint(point.clientX, point.clientY)
+    const ev = $el?.ownerDocument.createEvent('MouseEvent')
     if (!$el) {
       console.error(
         `Cannot find element for ${eventType}, it seems that the element or the rect you provide is out of the viewport.\n`,
         {
           el,
           point,
-          originPoint,
         },
       )
     } else {
-      ev.initMouseEvent(
+      ev!.initMouseEvent(
         eventType,
         true,
         true,
-        window,
+        getOwnerWindow($el as HTMLElement),
         0,
         point.screenX,
         point.screenY,
@@ -63,7 +50,7 @@ export function mockMouseEvent(
       )
       eventTrigger($el, ev)
     }
-    return { originPoint, point }
+    return { point }
   }
 }
 
@@ -71,5 +58,11 @@ export function mockClick(el?: HTMLElement | DOMRect | null) {
   mockMouseEvent('mouseenter', el)
   mockMouseEvent('mouseover', el)
   mockMouseEvent('mousemove', el)
-  return mockMouseEvent('click', el)
+  mockMouseEvent('mousedown', el)
+  mockMouseEvent('mouseup', el)
+  const res = mockMouseEvent('click', el)
+  mockMouseEvent('mousemove', el)
+  mockMouseEvent('mouseout', el)
+  mockMouseEvent('mouseleave', el)
+  return res
 }

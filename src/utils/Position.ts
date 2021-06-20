@@ -11,43 +11,15 @@ export function getPoint(el: DOMRect | HTMLElement) {
       height: window.innerHeight,
     } as any,
   ]
-  const iframePosition = (() => {
-    const pos = { x: 0, y: 0, topWindow: win }
-    while (pos.topWindow.frameElement) {
-      const currWin = pos.topWindow
-      const iframe = currWin.frameElement
-      const rect = iframe.getBoundingClientRect()
-      pos.topWindow = getOwnerWindow(iframe as HTMLElement)
 
-      const style = pos.topWindow.getComputedStyle(iframe)
-      rect.x += parseInt(style.borderLeft, 10)
-      rect.y += parseInt(style.borderTop, 10)
-      rect.width = currWin.innerWidth
-      rect.height = currWin.innerHeight
-      pagesRect.push(rect)
-
-      pos.x += rect.x
-      pos.y += rect.y
-    }
-    return pos
-  })()
-  const iframeElRectCorrect = (rect: DOMRect) => {
-    // eslint-disable-next-line no-param-reassign
-    rect.x += iframePosition.x
-    // eslint-disable-next-line no-param-reassign
-    rect.y += iframePosition.y
-    return rect
-  }
-
-  const rect = iframeElRectCorrect(
-    'style' in el ? (el as Element).getBoundingClientRect() : (el as DOMRect),
-  )
+  const rect =
+    'style' in el ? (el as Element).getBoundingClientRect() : (el as DOMRect)
   const scrollParentsRect = (() => {
     if ('style' in el) {
       const arr: DOMRect[] = []
       let $el = getScrollParent(el as HTMLElement)
       while ($el) {
-        arr.push(iframeElRectCorrect($el.getBoundingClientRect()))
+        arr.push($el.getBoundingClientRect())
         $el = getScrollParent($el)
       }
       return arr.filter(it => it.width && it.height)
@@ -101,7 +73,7 @@ export function getPoint(el: DOMRect | HTMLElement) {
       clientPos.clientY = Math.floor(center.y)
     }
   }
-  const { innerWidth, innerHeight } = iframePosition.topWindow
+  const { innerWidth, innerHeight } = win
   screenPos.screenX = clientPos.clientX - innerWidth
   screenPos.screenY = clientPos.clientY - innerHeight
   return {

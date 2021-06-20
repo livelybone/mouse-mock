@@ -8,8 +8,8 @@
   <!-- Inject some helpers for code running. It is not needed in a real project when you configured babel-polyfill or there is no new feature of js which is used in the project -->
   <!-- 为代码运行注入一些babel帮助函数。在真正的babel项目中，当已配置 babel-polyfill 时，或者js没有新特性时，并不需要它 -->
   <script src="https://cdn.jsdelivr.net/npm/@babel/polyfill/dist/polyfill.min.js"></script>
-
   <script src="../lib/umd/index.js"></script>
+  <script>MouseMock.rewriteListenerBinder()</script>
   <style>
     body {
       font-size: 14px;
@@ -51,7 +51,7 @@ var input = document.getElementById('input')
 var eventType = input.value
 
 function listenMouse(ev) {
-  console.log(`addEventListener ${eventType}`, ev)
+  console.log(`addEventListener ${eventType}`, ev instanceof MouseEvent, ev)
 }
 
 btn.addEventListener(eventType, listenMouse)
@@ -63,22 +63,24 @@ input.addEventListener('change', () => {
 })
 
 function mockMouseEvent() {
-  MouseMock.mockMouseEvent(eventType, btn)
+  const point = MouseMock.mockMouseEvent(eventType, btn)
+  if (point) {
+    const dot1 = document.querySelector('#dot1')
+    dot1.style.top = (point && point.point.clientY) + 'px'
+    dot1.style.left = (point && point.point.clientX) + 'px'
+  }
 }
 
 function clickElInnerIframe() {
   // const el = Math.random() > 0.5 ? document.querySelector('#iframe1').getBoundingClientRect() : document.querySelector('#iframe').contentWindow.document.querySelector('#btn')
-  const el = document.querySelector('#iframe').contentWindow.document.querySelector('#btn')
-  console.log(1111, el)
+  const iframe = document.querySelector('#iframe')
+  const rect = iframe.getBoundingClientRect()
+  const el = iframe.contentWindow.document.querySelector('#btn')
   const point = MouseMock.mockMouseEvent(eventType, el)
-  console.log(11112222, point, el)
   if (point) {
     const dot = document.querySelector('#dot')
-    const dot1 = document.querySelector('#dot1')
-    dot.style.top = (point && point.originPoint.clientY) + 'px'
-    dot.style.left = (point && point.originPoint.clientX) + 'px'
-    dot1.style.top = (point && point.point.clientY) + 'px'
-    dot1.style.left = (point && point.point.clientX) + 'px'
+    dot.style.top = (point && (point.point.clientY + rect.y + 1)) + 'px'
+    dot.style.left = (point && (point.point.clientX + rect.x + 1)) + 'px'
   }
 }
 

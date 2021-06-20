@@ -10,12 +10,6 @@ declare global {
 declare function rewriteListenerBinder(): void;
 
 declare function mockMouseEvent(eventType: string, el?: HTMLElement | DOMRect | null): {
-    originPoint: {
-        clientX: number;
-        clientY: number;
-        screenY: number;
-        screenX: number;
-    };
     point: {
         clientX: number;
         clientY: number;
@@ -24,12 +18,6 @@ declare function mockMouseEvent(eventType: string, el?: HTMLElement | DOMRect | 
     };
 } | undefined;
 declare function mockClick(el?: HTMLElement | DOMRect | null): {
-    originPoint: {
-        clientX: number;
-        clientY: number;
-        screenY: number;
-        screenX: number;
-    };
     point: {
         clientX: number;
         clientY: number;

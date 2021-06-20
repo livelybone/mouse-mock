@@ -28,7 +28,7 @@ function eventDeal(ev: any) {
     proto = proto.__proto__
   }
   $ev.isTrusted = true
-  $ev.__proto__ = ev.__proto__
+  $ev.__proto__ = ev.__proto__?.constructor?.prototype || ev.__proto__
   return $ev
 }
 
